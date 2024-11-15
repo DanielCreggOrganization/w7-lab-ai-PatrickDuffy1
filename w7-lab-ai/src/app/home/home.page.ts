@@ -6,7 +6,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent,
          IonCardHeader, IonCardTitle, IonItem, IonLabel, 
          IonButton, IonIcon, IonProgressBar, IonText,
          IonRadioGroup, IonRadio, IonImg, IonTextarea,
-         IonRippleEffect } from '@ionic/angular/standalone';
+         IonRippleEffect, IonSelectOption } from '@ionic/angular/standalone';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { environment } from '../../environments/environment';
 import { GeminiAiService } from '../services/gemini-ai.service';
@@ -25,7 +25,7 @@ import { GeminiAiService } from '../services/gemini-ai.service';
          IonCardHeader, IonCardTitle, IonItem, IonLabel, 
          IonButton, IonIcon, IonProgressBar, IonText,
          IonRadioGroup, IonRadio, IonImg, IonTextarea,
-         IonRippleEffect
+         IonRippleEffect, IonSelectOption
   ]
 })
 export class HomePage {
@@ -34,6 +34,7 @@ export class HomePage {
   // HINT: Something like "Provide a recipe for these baked goods"
   prompt = "Provide a recipe for these baked goods"; 
   output = '';
+  selectedModel: string = 'gemini-1.5-flash';
   isLoading = false;
 
   availableImages = [
@@ -59,15 +60,31 @@ export class HomePage {
   async onSubmit() {
     if (this.isLoading) return;
     this.isLoading = true;
+
+    console.log('Selected Model:', this.selectedModel);
     
     try {
       const base64Image = await this.geminiService.getImageAsBase64(this.selectedImage);
-      this.output = await this.geminiService.generateRecipe(base64Image, this.prompt);
+      this.output = await this.geminiService.generateRecipe(base64Image, this.prompt, this.selectedModel);
       
     } catch (e) {
       this.output = `Error: ${e instanceof Error ? e.message : 'Something went wrong'}`;
     }
     
     this.isLoading = false;
+  }
+
+  // Copy the generated recipe to clipboard
+  copyToClipboard(content: string) {
+    if (!content) {
+      return;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = content;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
   }
 }

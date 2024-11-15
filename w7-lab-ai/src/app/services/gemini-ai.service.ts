@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class GeminiAiService {
-  private readonly MODEL_NAME = 'gemini-1.5-flash';
+  //private readonly MODEL_NAME = 'gemini-1.5-flash';
   public output: string = '';
   private prompt: string = ''; // Set this via a method or in the constructor
 
@@ -31,10 +31,13 @@ export class GeminiAiService {
     }
   }
 
-  async generateRecipe(imageBase64: string, prompt: string): Promise<string> {
+  async generateRecipe(imageBase64: string, prompt: string, selectedModel:string): Promise<string> {
+
+    console.log("model: " + selectedModel)
+
     try {
       const genAI = new GoogleGenerativeAI(environment.apiKey);
-      const model = genAI.getGenerativeModel({ model: this.MODEL_NAME });
+      const model = genAI.getGenerativeModel({ model: selectedModel });
 
       const result = await model.generateContent({
         contents: [{
