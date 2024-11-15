@@ -9,6 +9,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent,
          IonRippleEffect } from '@ionic/angular/standalone';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { environment } from '../../environments/environment';
+import { GeminiAiService } from '../services/gemini-ai.service';
 
 @Component({
   selector: 'app-home',
@@ -19,13 +20,19 @@ import { environment } from '../../environments/environment';
     // HINT: Copy each component name from the imports list
     CommonModule, 
     FormsModule,
-    // YOUR CODE HERE
+    IonHeader, IonToolbar, IonTitle, IonContent, 
+         IonGrid, IonRow, IonCol, IonCard, IonCardContent, 
+         IonCardHeader, IonCardTitle, IonItem, IonLabel, 
+         IonButton, IonIcon, IonProgressBar, IonText,
+         IonRadioGroup, IonRadio, IonImg, IonTextarea,
+         IonRippleEffect
   ]
 })
 export class HomePage {
+  constructor(private geminiService: GeminiAiService) {}
   // TODO: Add default prompt
   // HINT: Something like "Provide a recipe for these baked goods"
-  prompt = ''; 
+  prompt = "Provide a recipe for these baked goods"; 
   output = '';
   isLoading = false;
 
@@ -43,7 +50,7 @@ export class HomePage {
 
   selectImage(url: string) {
     // TODO: Set the selectedImage property
-    // HINT: this.selectedImage = url;
+    this.selectedImage = url;
   }
 
   async onSubmit() {
@@ -51,34 +58,8 @@ export class HomePage {
     this.isLoading = true;
     
     try {
-      const response = await fetch(this.selectedImage);
-      const blob = await response.blob();
-      const base64data = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(blob);
-      });
-      const base64String = base64data.split(',')[1];
-  
-      const genAI = new GoogleGenerativeAI(environment.apiKey);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-const result = await model.generateContent({
-  contents: [{
-    role: 'user',
-    parts: [
-      { 
-        inlineData: { 
-          mimeType: 'image/jpeg', 
-          data: base64String
-        } 
-      },
-      { text: this.prompt }
-    ]
-  }]
-});
-
-this.output = result.response.text();
+      const base64Image = await this.geminiService.getImageAsBase64(this.selectedImage);
+      this.output = await this.geminiService.generateRecipe(base64Image, this.prompt);
       
     } catch (e) {
       this.output = `Error: ${e instanceof Error ? e.message : 'Something went wrong'}`;
