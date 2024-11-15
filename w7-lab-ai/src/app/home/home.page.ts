@@ -45,4 +45,32 @@ export class HomePage {
     // TODO: Set the selectedImage property
     // HINT: this.selectedImage = url;
   }
+
+  async onSubmit() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+    
+    try {
+      const response = await fetch(this.selectedImage);
+      const blob = await response.blob();
+      const base64data = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+      const base64String = base64data.split(',')[1];
+  
+      // TODO: Add Gemini AI code here
+      // HINT: Follow these steps:
+      // 1. Create the AI client
+      // 2. Get the model
+      // 3. Call generateContent
+      // 4. Update this.output
+      
+    } catch (e) {
+      this.output = `Error: ${e instanceof Error ? e.message : 'Something went wrong'}`;
+    }
+    
+    this.isLoading = false;
+  }
 }
