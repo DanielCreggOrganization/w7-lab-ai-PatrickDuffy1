@@ -60,12 +60,25 @@ export class HomePage {
       });
       const base64String = base64data.split(',')[1];
   
-      // TODO: Add Gemini AI code here
-      // HINT: Follow these steps:
-      // 1. Create the AI client
-      // 2. Get the model
-      // 3. Call generateContent
-      // 4. Update this.output
+      const genAI = new GoogleGenerativeAI(environment.apiKey);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+const result = await model.generateContent({
+  contents: [{
+    role: 'user',
+    parts: [
+      { 
+        inlineData: { 
+          mimeType: 'image/jpeg', 
+          data: base64String
+        } 
+      },
+      { text: this.prompt }
+    ]
+  }]
+});
+
+this.output = result.response.text();
       
     } catch (e) {
       this.output = `Error: ${e instanceof Error ? e.message : 'Something went wrong'}`;
