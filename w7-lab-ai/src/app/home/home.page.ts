@@ -39,7 +39,10 @@ export class HomePage {
   availableImages = [
     { url: 'assets/images/baked_goods_1.jpg', label: 'Baked Good 1' },
     { url: 'assets/images/baked_goods_2.jpg', label: 'Baked Good 2' },
-    { url: 'assets/images/baked_goods_3.jpg', label: 'Baked Good 3' }
+    { url: 'assets/images/baked_goods_3.jpg', label: 'Baked Good 3' },
+    { url: 'assets/images/baked_goods_4.jpg', label: 'Baked Good 4' },
+    { url: 'assets/images/baked_goods_5.jpg', label: 'Baked Good 5' },
+    { url: 'assets/images/baked_goods_6.jpg', label: 'Baked Good 6' }
   ];
 
   selectedImage = this.availableImages[0].url;
